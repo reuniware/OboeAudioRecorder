@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include "OboeAudioRecorder.h"
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_oboeaudiorecorder_MainActivity_stringFromJNI(
@@ -14,6 +15,8 @@ Java_com_example_oboeaudiorecorder_MainActivity_recordAudio(
         JNIEnv * env,
         jobject MainActivity
 ) {
+
+    auto a = new OboeAudioRecorder();
 
     return true;
 }
