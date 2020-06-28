@@ -8,12 +8,18 @@
 
     <TextView
         android:id="@+id/sample_text"
+        android:layout_width="256dp"
+        android:layout_height="32dp"
+        android:text="Hello World!"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonRecordAudio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Record Audio"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/sample_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

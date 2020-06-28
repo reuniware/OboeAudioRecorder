@@ -12,6 +12,10 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         sample_text.text = stringFromJNI()
+
+        buttonRecordAudio.setOnClickListener{
+            recordAudio()
+        }
     }
 
     /**
@@ -19,6 +23,8 @@ class MainActivity : AppCompatActivity() {
      * which is packaged with this application.
      */
     external fun stringFromJNI(): String
+
+    external fun recordAudio(): Boolean
 
     companion object {
         // Used to load the 'native-lib' library on application startup.
