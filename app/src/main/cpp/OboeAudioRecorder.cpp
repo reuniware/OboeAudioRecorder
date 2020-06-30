@@ -5,6 +5,7 @@
 #include <string>
 #include <oboe/Oboe.h>
 #include "OboeAudioRecorder.h"
+#include "oboe/samples/debug-utils/logging_macros.h"
 
 class OboeAudioRecorder: public oboe::AudioStreamCallback {
 public:
@@ -14,6 +15,12 @@ public:
         builder.setDirection(oboe::Direction::Input);
         builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
         builder.setDeviceId(0);
+        builder.setChannelCount(oboe::ChannelCount::Mono);
+        builder.setInputPreset(oboe::InputPreset::Unprocessed);
+        builder.setFormat(oboe::AudioFormat::Float);
+        builder.setSharingMode(oboe::SharingMode::Shared);
+        builder.setSampleRate(48000);
+        builder.setCallback(this);
 
         oboe::AudioStream *stream;
         oboe::Result r = builder.openStream(&stream);
@@ -27,7 +34,9 @@ public:
         }
 
         constexpr int kMillisecondsToRecord = 2;
-        const int32_t requestedFrames = (int32_t)(kMillisecondsToRecord * (stream->getSampleRate()/oboe::kMillisPerSecond));
+        const int32_t requestedFrames = (int32_t) (kMillisecondsToRecord *
+                                                   (stream->getSampleRate() /
+                                                    oboe::kMillisPerSecond));
         int16_t mybuffer[requestedFrames];
 
         constexpr int64_t kTimeoutValue = 3 * oboe::kNanosPerMillisecond;
@@ -37,9 +46,12 @@ public:
             auto result = stream->read(mybuffer, stream->getBufferSizeInFrames(), 0);
             if (result != oboe::Result::OK) break;
             framesRead = result.value();
+            if (framesRead > 0) {
+                break;
+            }
         } while (framesRead != 0);
 
-        bool isRecording = true;
+        /*bool isRecording = true;
         while (isRecording) {
             auto result = stream->read(mybuffer, requestedFrames, kTimeoutValue);
             if (result == oboe::Result::OK) {
@@ -47,14 +59,20 @@ public:
             } else {
                 auto error = convertToText(result.error());
             }
-        }
+        }*/
 
         stream->close();
-
-
     }
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream, void *audioData, int32_t numFrames) override {
+        LOGE("onAudioReady");
+
+        try {
+            oboeStream->close();
+        } catch(int e) {
+            LOGE("onAudioReady exception");
+        }
+        //LOGE("onAudioReady end");
     }
 
 private:
