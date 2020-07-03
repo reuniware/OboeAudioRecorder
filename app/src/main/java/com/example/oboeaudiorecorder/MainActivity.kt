@@ -1,13 +1,17 @@
 package com.example.oboeaudiorecorder
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
+import android.media.AudioManager
+import android.media.AudioManager.GET_DEVICES_INPUTS
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +21,9 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         sample_text.text = stringFromJNI()
+
+        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
 
         buttonRecordAudio.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
