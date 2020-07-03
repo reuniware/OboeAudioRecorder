@@ -33,12 +33,12 @@ class MainActivity : AppCompatActivity() {
                 Log.i("", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                recordAudio()
+                Thread(Runnable { recordAudio() }).start()
             }
         }
 
         buttonStopRecording.setOnClickListener {
-            stopRecording()
+            Thread(Runnable { stopRecording() }).start()
         }
     }
 
@@ -51,7 +51,10 @@ class MainActivity : AppCompatActivity() {
                     Log.i("", "Permission has been denied by user")
                 } else {
                     Log.i("", "Permission has been granted by user")
-                    recordAudio()
+
+                    Thread(Runnable{
+                        recordAudio()
+                    }).start()
                 }
             }
         }
