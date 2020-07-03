@@ -23,14 +23,19 @@ private:
 
 public:
     static OboeAudioRecorder *get() {
-        if (!singleton)
+        if (singleton == nullptr)
             singleton = new OboeAudioRecorder();
         return singleton;
     }
 
     bool isRecording = true;
 
+    void StopAudioRecorder() {
+        this->isRecording = false;
+    }
+
     void StartAudioRecorder() {
+        this->isRecording = true;
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
         builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
@@ -62,8 +67,7 @@ public:
                                                         oboe::kMillisPerSecond));
             __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "requestedFrames = %d",
                                 requestedFrames);
-            //const int32_t requestedFrames = 65536;
-            //int16_t mybuffer[requestedFrames];
+
             int16_t mybuffer[requestedFrames];
             constexpr int64_t kTimeoutValue = 3 * oboe::kNanosPerMillisecond;
 

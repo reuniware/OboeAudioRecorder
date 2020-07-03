@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity() {
                 recordAudio()
             }
         }
+
+        buttonStopRecording.setOnClickListener {
+            stopRecording()
+        }
     }
 
     val RECORD_REQUEST_CODE = 1234
@@ -60,6 +64,8 @@ class MainActivity : AppCompatActivity() {
     external fun stringFromJNI(): String
 
     external fun recordAudio(): Boolean
+
+    external fun stopRecording(): Boolean
 
     companion object {
         // Used to load the 'native-lib' library on application startup.
