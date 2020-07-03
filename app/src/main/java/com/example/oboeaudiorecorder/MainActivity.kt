@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_INPUTS
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,14 +25,14 @@ class MainActivity : AppCompatActivity() {
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
         
-        buttonRecordAudio.setOnClickListener{
+        buttonStartRecording.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
 
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 Log.i("", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                Thread(Runnable { recordAudio() }).start()
+                Thread(Runnable { startRecording() }).start()
             }
         }
 
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("", "Permission has been granted by user")
 
                     Thread(Runnable{
-                        recordAudio()
+                        startRecording()
                     }).start()
                 }
             }
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
      */
     external fun stringFromJNI(): String
 
-    external fun recordAudio(): Boolean
+    external fun startRecording(): Boolean
 
     external fun stopRecording(): Boolean
 
