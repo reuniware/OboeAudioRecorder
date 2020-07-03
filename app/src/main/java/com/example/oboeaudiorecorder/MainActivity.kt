@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_INPUTS
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
-
+        
         buttonRecordAudio.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
 

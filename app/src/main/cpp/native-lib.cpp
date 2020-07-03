@@ -20,8 +20,13 @@ Java_com_example_oboeaudiorecorder_MainActivity_recordAudio(
         jobject MainActivity
 ) {
 
-    auto a = new OboeAudioRecorder();
-    //a->isRecording = true;
+    static auto a = OboeAudioRecorder::get();
+    a->isRecording = true;
+    a->StartAudioRecorder();
+
+    //auto a = OboeAudioRecorder();
+    //auto b = a.getInstance();
+    //b->StartAudioRecorder();
 
     return true;
 }
