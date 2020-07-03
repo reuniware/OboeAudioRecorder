@@ -14,15 +14,14 @@ public:
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
         builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
-        builder.setDeviceId(1);
-        builder.setFormat(oboe::AudioFormat::I16);
-
-        /*builder.setChannelCount(oboe::ChannelCount::Mono);
-        builder.setInputPreset(oboe::InputPreset::Unprocessed);
+        //builder.setDeviceId(1);
+        //builder.setFormat(oboe::AudioFormat::I16);
         builder.setFormat(oboe::AudioFormat::Float);
+        builder.setChannelCount(oboe::ChannelCount::Mono);
+        builder.setInputPreset(oboe::InputPreset::Unprocessed);
         builder.setSharingMode(oboe::SharingMode::Shared);
-        builder.setSampleRate(48000);*/
-        //builder.setAudioApi(oboe::AudioApi::OpenSLES);
+        builder.setSampleRate(48000);
+        builder.setAudioApi(oboe::AudioApi::OpenSLES);
         //builder.setCallback(this);
 
         //oboe::AudioStream *stream;
@@ -37,39 +36,47 @@ public:
         }
 
         auto a = stream->getState();
+        if (a == oboe::StreamState::Started) {
 
-        constexpr int kMillisecondsToRecord = 2;
-        const int32_t requestedFrames = (int32_t) (kMillisecondsToRecord * (stream->getSampleRate() / (100 * oboe::kNanosPerMillisecond) /* oboe::kMillisPerSecond*/));
-        int16_t mybuffer[requestedFrames];
-        constexpr int64_t kTimeoutValue = 3 * oboe::kNanosPerMillisecond;
+            constexpr int kMillisecondsToRecord = 2;
+            const int32_t requestedFrames = (int32_t) (kMillisecondsToRecord * (stream->getSampleRate() / oboe::kMillisPerSecond));
+            __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "requestedFrames = %d", requestedFrames);
+            //const int32_t requestedFrames = 65536;
+            //int16_t mybuffer[requestedFrames];
+            float_t mybuffer[requestedFrames];
+            constexpr int64_t kTimeoutValue = 3 * oboe::kNanosPerMillisecond;
 
-        int framesRead = 0;
-        do {
-            auto result = stream->read(mybuffer, /*stream->getBufferSizeInFrames()*/ requestedFrames, 0);
-            if (result != oboe::Result::OK) {
-                return;//break;
-            }
-            framesRead = result.value();
-            __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "framesRead = %d", framesRead);
-            if (framesRead > 0) {
-                break;
-            }
-        } while (framesRead != 0);
+            int framesRead = 0;
+            do {
+                auto result = stream->read(mybuffer, requestedFrames, 0);
+                if (result != oboe::Result::OK) {
+                    break;
+                }
+                framesRead = result.value();
+                __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "framesRead = %d", framesRead);
+                if (framesRead > 0) {
+                    break;
+                }
+            } while (framesRead != 0);
 
-        bool isRecording = true;
-        while (isRecording) {
-            auto result = stream->read(mybuffer, requestedFrames, kTimeoutValue * 1000);
-            if (result == oboe::Result::OK) {
-                auto nbFramesRead = result.value();
-                __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead = %d", nbFramesRead);
-            } else {
-                auto error = convertToText(result.error());
-                __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "error = %s", error);
+            bool isRecording = true;
+            while (isRecording) {
+                auto result = stream->read(mybuffer, requestedFrames, kTimeoutValue * 1000);
+                if (result == oboe::Result::OK) {
+                    auto nbFramesRead = result.value();
+                    __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead = %d", nbFramesRead);
+                    for (int i=0; i<nbFramesRead; i++) {
+                        __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead[%d] = %f", i, mybuffer[i]);
+                    }
+                } else {
+                    auto error = convertToText(result.error());
+                    __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "error = %s", error);
+                }
             }
+
+            stream->requestStop();
+            stream->close();
         }
-
-        stream->requestStop();
-        stream->close();
     }
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream, void *audioData, int32_t numFrames) override {
