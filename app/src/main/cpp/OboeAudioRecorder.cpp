@@ -62,7 +62,7 @@ public:
         builder.setAudioApi(oboe::AudioApi::OpenSLES);
         //builder.setCallback(this);
 
-        // Wave file generating stuff
+        // Wave file generating stuff (from https://www.cplusplus.com/forum/beginner/166954/)
         std::ofstream f;
         const char *path = "/storage/emulated/0/Music/record.wav";
         f.open(path, std::ios::binary);
