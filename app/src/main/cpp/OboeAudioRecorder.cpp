@@ -49,7 +49,7 @@ public:
 
     int recordingFrequency = 48000;
 
-    void StartAudioRecorder(jstring fullPathToFile) {
+    void StartAudioRecorder(const char * fullPathToFile) {
         this->isRecording = true;
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
@@ -64,7 +64,8 @@ public:
 
         // Wave file generating stuff (from https://www.cplusplus.com/forum/beginner/166954/)
         std::ofstream f;
-        const char *path = "/storage/emulated/0/Music/record.wav";
+        //const char *path = "/storage/emulated/0/Music/record.wav";
+        const char *path = fullPathToFile;
         f.open(path, std::ios::binary);
         // Write the file headers
         f << "RIFF----WAVEfmt ";     // (chunk size to be filled in later)

@@ -19,8 +19,10 @@ Java_com_example_oboeaudiorecorder_MainActivity_startRecording(
         JNIEnv * env,
         jobject MainActivity,
         jstring fullPathToFile) {
+
+    const char *path = (*env).GetStringUTFChars(fullPathToFile, 0);
     static auto a = OboeAudioRecorder::get();
-    a->StartAudioRecorder(fullPathToFile);
+    a->StartAudioRecorder(path);
     return true;
 }
 
