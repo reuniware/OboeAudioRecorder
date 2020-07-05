@@ -47,21 +47,22 @@ public:
         this->isRecording = false;
     }
 
+    int recordingFrequency = 48000;
+
     void StartAudioRecorder(jstring fullPathToFile) {
         this->isRecording = true;
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
         builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
-        //builder.setFormat(oboe::AudioFormat::Float);
         builder.setFormat(oboe::AudioFormat::I16);
         builder.setChannelCount(oboe::ChannelCount::Mono);
         builder.setInputPreset(oboe::InputPreset::Unprocessed);
         builder.setSharingMode(oboe::SharingMode::Shared);
-        builder.setSampleRate(48000);
+        builder.setSampleRate(recordingFrequency);
         builder.setAudioApi(oboe::AudioApi::OpenSLES);
         //builder.setCallback(this);
 
-        // <BEGIN> Wav file generator
+        // Wave file generating stuff
         std::ofstream f;
         const char *path = "/storage/emulated/0/Music/record.wav";
         f.open(path, std::ios::binary);
@@ -70,44 +71,19 @@ public:
         write_word( f,     16, 4 );  // no extension data
         write_word( f,      1, 2 );  // PCM - integer samples
         write_word( f,      2, 2 );  // two channels (stereo file)
-        write_word( f,  44100, 4 );  // samples per second (Hz)
+        write_word( f,  recordingFrequency, 4 );  // samples per second (Hz)
         write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
         write_word( f,      4, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
         write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)
+
         // Write the data chunk header
         size_t data_chunk_pos = f.tellp();
-        f << "data----";  // (chunk size to be filled in later)        f.flush();
+        f << "data----";  // (chunk size to be filled in later)
+        // f.flush();
 
         // Write the audio samples
-        // (We'll generate a single C4 note with a sine wave, fading from left to right)
         constexpr double two_pi = 6.283185307179586476925286766559;
         constexpr double max_amplitude = 32760;  // "volume"
-
-        /*double hz        = 44100;    // samples per second
-        double frequency = 528;//261.626;  // middle C
-        double seconds   = 10;      // time
-
-        int N = hz * seconds;  // total number of samples
-        for (int n = 0; n < N; n++)
-        {
-            double amplitude = (double)n / N * max_amplitude;
-            double value     = sin( (two_pi * n * frequency) / hz );
-            write_word( f, (int)(                 amplitude  * value), 2 );
-            write_word( f, (int)((max_amplitude - amplitude) * value), 2 );
-        }
-
-        // (We'll need the final file size to fix the chunk sizes above)
-        size_t file_length = f.tellp();
-
-        // Fix the data chunk header to contain the data size
-        f.seekp( data_chunk_pos + 4 );
-        write_word( f, file_length - data_chunk_pos + 8 );
-
-        // Fix the file header to contain the proper RIFF chunk size, which is (file size - 8) bytes
-        f.seekp( 0 + 4 );
-        write_word( f, file_length - 8, 4 );
-        f.close();*/
-        // <END> Wav file generator
 
         oboe::Result r = builder.openStream(&stream);
         if (r != oboe::Result::OK) {
@@ -123,11 +99,8 @@ public:
         if (a == oboe::StreamState::Started) {
 
             constexpr int kMillisecondsToRecord = 2;
-            auto requestedFrames = (int32_t) (kMillisecondsToRecord *
-                                                       (stream->getSampleRate() /
-                                                        oboe::kMillisPerSecond));
-            __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "requestedFrames = %d",
-                                requestedFrames);
+            auto requestedFrames = (int32_t) (kMillisecondsToRecord * (stream->getSampleRate() / oboe::kMillisPerSecond));
+            __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "requestedFrames = %d", requestedFrames);
 
             int16_t mybuffer[requestedFrames];
             constexpr int64_t kTimeoutValue = 3 * oboe::kNanosPerMillisecond;
@@ -139,8 +112,7 @@ public:
                     break;
                 }
                 framesRead = result.value();
-                __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "framesRead = %d",
-                                    framesRead);
+                __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "framesRead = %d", framesRead);
                 if (framesRead > 0) {
                     break;
                 }
@@ -150,12 +122,8 @@ public:
                 auto result = stream->read(mybuffer, requestedFrames, kTimeoutValue * 1000);
                 if (result == oboe::Result::OK) {
                     auto nbFramesRead = result.value();
-                    __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead = %d",
-                                        nbFramesRead);
-                    for (int i = 0; i < nbFramesRead; i++) {
-                        __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder",
-                                            "nbFramesRead[%d] = %d", i, mybuffer[i]);
-
+                    __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead = %d", nbFramesRead);
+                    for (int i = 0; i < nbFramesRead; i++) { __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder","nbFramesRead[%d] = %d", i, mybuffer[i]);
                         write_word( f, (int)(mybuffer[i]), 2 );
                         write_word( f, (int)(mybuffer[i]), 2 );
                     }
