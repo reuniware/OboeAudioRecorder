@@ -53,7 +53,8 @@ public:
         this->isRecording = true;
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
-        builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
+        //builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
+        builder.setPerformanceMode(oboe::PerformanceMode::None);
         builder.setFormat(oboe::AudioFormat::I16);
         builder.setChannelCount(oboe::ChannelCount::Mono);
         builder.setInputPreset(oboe::InputPreset::Unprocessed);

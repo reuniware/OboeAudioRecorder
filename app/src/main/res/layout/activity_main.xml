@@ -18,6 +18,7 @@
         android:id="@+id/buttonStartRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="Start Recording"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sample_text" />
@@ -26,10 +27,35 @@
         android:id="@+id/buttonStopRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginEnd="16dp"
         android:text="Stop Recording"
-        app:layout_constraintLeft_toRightOf="@id/buttonStartRecording"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonStartRecording"
         />
+
+    <TextView
+        android:id="@+id/textViewFreq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recording Frequency"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/editTextFreq"
+        app:layout_constraintBottom_toBottomOf="@id/editTextFreq"
+        />
+
+    <EditText
+        android:id="@+id/editTextFreq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintLeft_toRightOf="@id/textViewFreq"
+        app:layout_constraintTop_toBottomOf="@id/buttonStartRecording"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

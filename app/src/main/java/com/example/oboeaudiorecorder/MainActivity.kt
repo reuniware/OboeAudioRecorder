@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         // Example of a call to a native method
         sample_text.text = stringFromJNI()
 
+        editTextFreq.setText(recordingFrequency.toString())
+
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
 
@@ -68,13 +70,23 @@ class MainActivity : AppCompatActivity() {
                 Log.i("OboeAudioRecorder", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                Thread(Runnable { startRecording(fullPathToFile, recordingFrequency) }).start()
+                Thread(Runnable { startRecording(fullPathToFile, getRecordingFreq()) }).start()
             }
         }
 
         buttonStopRecording.setOnClickListener {
             Thread(Runnable { stopRecording() }).start()
         }
+    }
+
+    // Get the recording frequency entered by the user. If empty then default to 48000.
+    fun getRecordingFreq() : Int {
+        var freq = recordingFrequency
+        if (!editTextFreq.text.toString().trim().isEmpty())
+        {
+            freq = editTextFreq.text.toString().toInt()
+        }
+        return freq
     }
 
     val RECORD_REQUEST_CODE = 1234
@@ -90,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("OboeAudioRecorder", "Permission has been granted by user")
 
                     Thread(Runnable{
-                        startRecording(fullPathToFile, recordingFrequency)
+                        startRecording(fullPathToFile, getRecordingFreq())
                     }).start()
                 }
             }
