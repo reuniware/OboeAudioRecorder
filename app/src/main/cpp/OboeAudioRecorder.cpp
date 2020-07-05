@@ -47,9 +47,9 @@ public:
         this->isRecording = false;
     }
 
-    int recordingFrequency = 48000;
+    //int recordingFrequency = 48000;
 
-    void StartAudioRecorder(const char * fullPathToFile) {
+    void StartAudioRecorder(const char *fullPathToFile, const int recordingFreq) {
         this->isRecording = true;
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
@@ -58,7 +58,7 @@ public:
         builder.setChannelCount(oboe::ChannelCount::Mono);
         builder.setInputPreset(oboe::InputPreset::Unprocessed);
         builder.setSharingMode(oboe::SharingMode::Shared);
-        builder.setSampleRate(recordingFrequency);
+        builder.setSampleRate(recordingFreq);
         builder.setAudioApi(oboe::AudioApi::OpenSLES);
         //builder.setCallback(this);
 
@@ -72,7 +72,7 @@ public:
         write_word( f,     16, 4 );  // no extension data
         write_word( f,      1, 2 );  // PCM - integer samples
         write_word( f,      2, 2 );  // two channels (stereo file)
-        write_word( f,  recordingFrequency, 4 );  // samples per second (Hz)
+        write_word( f,  recordingFreq, 4 );  // samples per second (Hz)
         write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
         write_word( f,      4, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
         write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)

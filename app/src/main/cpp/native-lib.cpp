@@ -18,11 +18,14 @@ extern "C" JNIEXPORT jboolean JNICALL
 Java_com_example_oboeaudiorecorder_MainActivity_startRecording(
         JNIEnv * env,
         jobject MainActivity,
-        jstring fullPathToFile) {
+        jstring fullPathToFile,
+        jint recordingFrequency) {
 
     const char *path = (*env).GetStringUTFChars(fullPathToFile, 0);
+    const int freq = (int) recordingFrequency;
+
     static auto a = OboeAudioRecorder::get();
-    a->StartAudioRecorder(path);
+    a->StartAudioRecorder(path, freq);
     return true;
 }
 

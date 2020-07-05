@@ -19,6 +19,9 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
+    var fullPathToFile = ""
+    var recordingFrequency = 48000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Full path that is going to be sent to C++ through JNI ("/storage/emulated/0/Recorders/record.wav")
-        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Recorders/record.wav";
+        fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Recorders/record.wav"
 
         buttonStartRecording.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -65,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 Log.i("OboeAudioRecorder", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                Thread(Runnable { startRecording(fullPathToFile) }).start()
+                Thread(Runnable { startRecording(fullPathToFile, recordingFrequency) }).start()
             }
         }
 
@@ -87,8 +90,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("OboeAudioRecorder", "Permission has been granted by user")
 
                     Thread(Runnable{
-                        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Music/record.wav";
-                        startRecording(fullPathToFile)
+                        startRecording(fullPathToFile, recordingFrequency)
                     }).start()
                 }
             }
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity() {
      */
     external fun stringFromJNI(): String
 
-    external fun startRecording(fullPathToFile: String): Boolean
+    external fun startRecording(fullPathToFile: String, recordingFrequency: Int): Boolean
 
     external fun stopRecording(): Boolean
 
