@@ -5,16 +5,21 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_INPUTS
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -24,15 +29,35 @@ class MainActivity : AppCompatActivity() {
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
-        
+
+        val permissionW = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (permissionW != PackageManager.PERMISSION_GRANTED) {
+            Log.i("OboeAudioRecorder", "Permission to write denied")
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), WRITE_REQUEST_CODE)
+        }
+
+        val permissionR = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (permissionR != PackageManager.PERMISSION_GRANTED) {
+            Log.i("OboeAudioRecorder", "Permission to read denied")
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_REQUEST_CODE)
+        }
+
+        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Music/record.wav";
+        try {
+            val file = File(Environment.getExternalStorageDirectory().path.toString() + "/Music", "record.wav")
+            file.createNewFile()
+        } catch(e: Exception) {
+            Log.i("OboeAudioRecorder", "Exception = ${e.message}")
+        }
+
         buttonStartRecording.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
 
             if (permission != PackageManager.PERMISSION_GRANTED) {
-                Log.i("", "Permission to record denied")
+                Log.i("OboeAudioRecorder", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                Thread(Runnable { startRecording() }).start()
+                Thread(Runnable { startRecording(fullPathToFile) }).start()
             }
         }
 
@@ -42,18 +67,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     val RECORD_REQUEST_CODE = 1234
+    val WRITE_REQUEST_CODE = 1235
+    val READ_REQUEST_CODE = 1236
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             RECORD_REQUEST_CODE -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.i("", "Permission has been denied by user")
+                    Log.i("OboeAudioRecorder", "Permission has been denied by user")
                 } else {
-                    Log.i("", "Permission has been granted by user")
+                    Log.i("OboeAudioRecorder", "Permission has been granted by user")
 
                     Thread(Runnable{
-                        startRecording()
+                        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Music/record.wav";
+                        startRecording(fullPathToFile)
                     }).start()
+                }
+            }
+            WRITE_REQUEST_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("OboeAudioRecorder", "Permission has been denied by user")
+                } else {
+                    Log.i("OboeAudioRecorder", "Permission has been granted by user")
+                }
+            }
+            READ_REQUEST_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("OboeAudioRecorder", "Permission has been denied by user")
+                } else {
+                    Log.i("OboeAudioRecorder", "Permission has been granted by user")
                 }
             }
         }
@@ -65,7 +107,7 @@ class MainActivity : AppCompatActivity() {
      */
     external fun stringFromJNI(): String
 
-    external fun startRecording(): Boolean
+    external fun startRecording(fullPathToFile: String): Boolean
 
     external fun stopRecording(): Boolean
 

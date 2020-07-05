@@ -17,10 +17,10 @@ Java_com_example_oboeaudiorecorder_MainActivity_stringFromJNI(
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_example_oboeaudiorecorder_MainActivity_startRecording(
         JNIEnv * env,
-        jobject MainActivity
-) {
+        jobject MainActivity,
+        jstring fullPathToFile) {
     static auto a = OboeAudioRecorder::get();
-    a->StartAudioRecorder();
+    a->StartAudioRecorder(fullPathToFile);
     return true;
 }
 
