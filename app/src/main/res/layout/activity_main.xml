@@ -26,8 +26,10 @@
         android:id="@+id/buttonStopRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
         android:text="Stop Recording"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonStartRecording" />
+        app:layout_constraintLeft_toRightOf="@id/buttonStartRecording"
+        app:layout_constraintTop_toTopOf="@id/buttonStartRecording"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
