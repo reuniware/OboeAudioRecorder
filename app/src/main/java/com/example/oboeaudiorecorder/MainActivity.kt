@@ -19,7 +19,6 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,13 +41,22 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_REQUEST_CODE)
         }
 
-        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Music/record.wav";
-        try {
-            val file = File(Environment.getExternalStorageDirectory().path.toString() + "/Music", "record.wav")
-            file.createNewFile()
-        } catch(e: Exception) {
-            Log.i("OboeAudioRecorder", "Exception = ${e.message}")
+        // Check if the Recorders ("/storage/emulated/0/Recorders/") directory exists, and if not then create it
+        val folder = File(Environment.getExternalStorageDirectory().path.toString() + "/Recorders")
+        if (folder.exists()) {
+            if (folder.isDirectory) {
+                // The Recorders directory exists
+            } else {
+                // Create the Recorders directory
+                folder.mkdir()
+            }
+        } else {
+            // Create the Recorders directory
+            folder.mkdir()
         }
+
+        // Full path that is going to be sent to C++ through JNI ("/storage/emulated/0/Recorders/record.wav")
+        val fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Recorders/record.wav";
 
         buttonStartRecording.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
