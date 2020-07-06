@@ -15,6 +15,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,8 +63,10 @@ class MainActivity : AppCompatActivity() {
             folder.mkdir()
         }
 
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale("fr")).format(Date())
+
         // Full path that is going to be sent to C++ through JNI ("/storage/emulated/0/Recorders/record.wav")
-        fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Recorders/record.wav"
+        fullPathToFile = Environment.getExternalStorageDirectory().path.toString() + "/Recorders/${timeStamp}_record.wav"
 
         buttonStartRecording.setOnClickListener{
             val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -70,12 +75,12 @@ class MainActivity : AppCompatActivity() {
                 Log.i("OboeAudioRecorder", "Permission to record denied")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_REQUEST_CODE)
             } else {
-                Thread(Runnable { startRecording(fullPathToFile, getRecordingFreq()) }).start()
+                processStartRecording()
             }
         }
 
         buttonStopRecording.setOnClickListener {
-            Thread(Runnable { stopRecording() }).start()
+            processStopRecording()
         }
     }
 
@@ -101,9 +106,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Log.i("OboeAudioRecorder", "Permission has been granted by user")
 
-                    Thread(Runnable{
-                        startRecording(fullPathToFile, getRecordingFreq())
-                    }).start()
+                    processStartRecording()
                 }
             }
             WRITE_REQUEST_CODE -> {
@@ -121,6 +124,53 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    var stopTimer = false
+    var seconds = 0
+    val maxSeconds = 10
+    fun startTimer() {
+        stopTimer = false
+        val timer = Timer()
+        val task = object : TimerTask() {
+            override fun run() {
+                if (!stopTimer) {
+                    seconds++
+                    textViewTimer.post {
+                        textViewTimer.setText(seconds.toString())
+                    }
+                    if (seconds == maxSeconds) {
+                        processStopRecording()
+                    }
+                } else {
+                    this.cancel()
+                }
+            }
+        }
+        timer.schedule(task, 0, 1000)
+    }
+
+    fun stopTimer() {
+        stopTimer = true
+        seconds = 0
+    }
+
+    val enableTimer = false
+
+    fun processStartRecording() {
+        if (enableTimer) {
+            startTimer()
+        }
+        Thread(Runnable {
+            startRecording(fullPathToFile, getRecordingFreq())
+        }).start()
+    }
+
+    fun processStopRecording() {
+        if (enableTimer) {
+            stopTimer()
+        }
+        Thread(Runnable { stopRecording() }).start()
     }
 
     /**

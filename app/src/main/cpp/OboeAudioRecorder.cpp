@@ -72,7 +72,8 @@ public:
         f << "RIFF----WAVEfmt ";     // (chunk size to be filled in later)
         write_word( f,     16, 4 );  // no extension data
         write_word( f,      1, 2 );  // PCM - integer samples
-        write_word( f,      2, 2 );  // two channels (stereo file)
+        //write_word( f,      2, 2 );  // two channels (stereo file)
+        write_word( f,      1, 2 );  // one channel (mono file)
         write_word( f,  recordingFreq, 4 );  // samples per second (Hz)
         write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
         write_word( f,      4, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
@@ -127,7 +128,7 @@ public:
                     __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder", "nbFramesRead = %d", nbFramesRead);
                     for (int i = 0; i < nbFramesRead; i++) { __android_log_print(ANDROID_LOG_INFO, "OboeAudioRecorder","nbFramesRead[%d] = %d", i, mybuffer[i]);
                         write_word( f, (int)(mybuffer[i]), 2 );
-                        write_word( f, (int)(mybuffer[i]), 2 );
+                        //write_word( f, (int)(mybuffer[i]), 2 ); // If stereo recording, add this line and write mybuffer[i+1] ?
                     }
                 } else {
                     auto error = convertToText(result.error());
