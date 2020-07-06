@@ -64,6 +64,10 @@ public:
         //builder.setCallback(this);
 
         // Wave file generating stuff (from https://www.cplusplus.com/forum/beginner/166954/)
+        int sampleRate = recordingFreq;
+        int bitsPerSample = 16; // multiple of 8
+        int numChannels = 1; // 2 for stereo, 1 for mono
+
         std::ofstream f;
         //const char *path = "/storage/emulated/0/Music/record.wav";
         const char *path = fullPathToFile;
@@ -72,12 +76,12 @@ public:
         f << "RIFF----WAVEfmt ";     // (chunk size to be filled in later)
         write_word( f,     16, 4 );  // no extension data
         write_word( f,      1, 2 );  // PCM - integer samples
-        //write_word( f,      2, 2 );  // two channels (stereo file)
-        write_word( f,      1, 2 );  // one channel (mono file)
+        write_word( f,      numChannels, 2 );  // one channel (mono) or two channels (stereo file)
         write_word( f,  recordingFreq, 4 );  // samples per second (Hz)
-        write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
+        //write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
+        write_word( f,(recordingFreq * bitsPerSample * numChannels) / 8, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
         write_word( f,      4, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
-        write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)
+        write_word( f,     bitsPerSample, 2 );  // number of bits per sample (use a multiple of 8)
 
         // Write the data chunk header
         size_t data_chunk_pos = f.tellp();
