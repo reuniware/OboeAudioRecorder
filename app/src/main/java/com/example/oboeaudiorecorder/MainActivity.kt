@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         // Example of a call to a native method
         sample_text.text = stringFromJNI()
 
+        buttonStartRecording.isEnabled = true
+        buttonStopRecording.isEnabled = false
+
         editTextFreq.setText(recordingFrequency.toString())
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -164,6 +167,8 @@ class MainActivity : AppCompatActivity() {
         Thread(Runnable {
             startRecording(fullPathToFile, getRecordingFreq())
         }).start()
+        buttonStartRecording.isEnabled = false
+        buttonStopRecording.isEnabled = true
     }
 
     fun processStopRecording() {
@@ -171,6 +176,8 @@ class MainActivity : AppCompatActivity() {
             stopTimer()
         }
         Thread(Runnable { stopRecording() }).start()
+        buttonStartRecording.isEnabled = true
+        buttonStopRecording.isEnabled = false
     }
 
     /**
