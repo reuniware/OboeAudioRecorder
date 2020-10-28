@@ -10,3 +10,6 @@ You can start the recording, leave the app (let it in the background) and it wil
 Feel free to contact me at : 
 investdatasystems@yahoo.com
 kotlinisland@protonmail.com
+
+And to check one of my websites :
+https://ntic974.blogspot.com
