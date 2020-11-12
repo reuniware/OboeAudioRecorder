@@ -2,7 +2,7 @@
 
 You might need to set the NDK to the latest version (see screenshot ndk.PNG).
 
-You might need to change "android.enablePrefab=true" with "android.buildFeatures.prefab=true"
+You might need to change "android.enablePrefab=true" with "android.buildFeatures.prefab=true", depending on gradle version used.
 
 I created this project some days ago, in order to get skills in Android JNI/NDK/C++ and Google Oboe library.
 
