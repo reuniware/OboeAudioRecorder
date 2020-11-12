@@ -2,6 +2,8 @@
 
 You might need to set the NDK to the latest version (see screenshot ndk.PNG).
 
+You might need to change "android.enablePrefab=true" with "android.buildFeatures.prefab=true"
+
 I created this project some days ago, in order to get skills in Android JNI/NDK/C++ and Google Oboe library.
 
 On 3rd of July 2020, it records audio to a buffer in memory.
