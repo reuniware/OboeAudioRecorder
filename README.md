@@ -10,7 +10,7 @@ I created this project in order to get skills in Android JNI/NDK/C++ and Google 
 
 I was in the process of being recruited by Music World Media in France near Paris, so I had to get this type of skills, but the recruiters stopped contacting me (maybe because of this f*cking covid).
 
-It records the audio to a .wav file on the Android device (in the "Recorders" folder).
+This application records the audio to a .wav file on the Android device (in the "Recorders" folder).
 You can start the recording, leave the app (let it in the background) and it will keep on recording the mic input, even if the Android device is in idle mode. Then you get back to the app, stop the recording, and the wav file is available in the "Recorders" directory.
 
 Feel free to contact me at : 
